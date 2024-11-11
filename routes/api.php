@@ -11,7 +11,9 @@ Route::get('/v1/user', function (Request $request) {
 
 
 Route::post('/v1/login', [UserController::class, 'login']);
-Route::get('/v1/logout', [UserController::class, 'logout']);
+Route::post('/v1/logout', [UserController::class, 'logout'])->middleware('auth:api');
 Route::post('/v1/signup', [UserController::class, 'signup']);
+Route::get('/v1/products', [ProductController::class, 'index'])->middleware('auth:api');
 
-Route::get('/v1/products', [ProductController::class, 'index']);
+Route::post('/v1/order', [OrderController::class, 'store'])->middleware('auth:api');
+Route::get('/v1/orders', [OrderController::class, 'index'])->middleware('auth:api');

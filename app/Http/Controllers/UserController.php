@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -24,6 +25,14 @@ class UserController extends Controller
 
     function signup()
     {
+        //check if email already exists
+        $user = User::where('email', request('email'))->first();
+        if ($user) {
+            return response()->json([
+                'message' => 'Email already exists'
+            ], 400);
+        }
+
         $user = new User();
         $user->email = request('email');
         $user->name = request('name');
@@ -39,5 +48,6 @@ class UserController extends Controller
             'message' => 'Successfully logged out'
         ]);
     }
+
 
 }
