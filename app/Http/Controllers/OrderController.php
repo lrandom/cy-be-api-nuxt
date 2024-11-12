@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
+use App\Models\Order;
 use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
@@ -30,14 +31,12 @@ class OrderController extends Controller
         try {
             $order = new Order();
             $order->user_id = auth()->user()->id;
-            $order->product_id = request('product_id');
-            $order->quantity = request('quantity');
-            $order->subtotal = $subtotal;
+            $order->sub_total = $subtotal;
             $order->tax = $subtotal * 0.1;
             $order->address = request('address');
             $order->phone = request('phone');
-            $order->note = request('note');
-            $order->status = 'pending';
+//            $order->note = request('note');
+            $order->status = 1;
             $order->total = $subtotal + $order->tax;
             $order->save();
 
@@ -45,6 +44,7 @@ class OrderController extends Controller
             foreach ($cartItem as $item) {
                 $orderItem = new OrderProduct();
                 $orderItem->order_id = $order->id;
+                $orderItem->name = $item['name'];
                 $orderItem->product_id = $item['product_id'];
                 $orderItem->quantity = $item['quantity'];
                 $orderItem->price = $item['price'];
@@ -55,6 +55,7 @@ class OrderController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
+            //dd($e);
             return response()->json([
                 'message' => 'Failed to place order'
             ], 500);
