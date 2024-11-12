@@ -19,7 +19,7 @@ class OrderController extends Controller
 
     function store()
     {
-        $cartItem = request('cartItem');
+        $cartItem = request('cart_item');
         $subtotal = 0;
         foreach ($cartItem as $item) {
             $subtotal += $item['price'] * $item['quantity'];
