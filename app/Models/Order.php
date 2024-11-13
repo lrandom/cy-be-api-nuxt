@@ -21,4 +21,9 @@ class Order extends Model
             return 'Cancelled';
         }
     }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderProduct::class, 'order_id', 'id');
+    }
 }

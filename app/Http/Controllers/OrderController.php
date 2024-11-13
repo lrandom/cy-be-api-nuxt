@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderProduct;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,9 @@ class OrderController extends Controller
     {
         //return response()->json(Product::all());
         //return with pagination
-        return response()->json(Order::paginate(10));
+        $loggedUser = auth()->user();
+
+        return response()->json(Order::where('user_id', $loggedUser->id)->with('orderItems')->orderBy('id', 'desc')->get());
     }
 
     function store()
@@ -50,6 +53,18 @@ class OrderController extends Controller
                 $orderItem->price = $item['price'];
                 $orderItem->total = $item['price'] * $item['quantity'];
                 $orderItem->save();
+
+                //update product stock
+                $product = Product::find($item['product_id']);
+                if ($product->stock >= $item['quantity']) {
+                    $product->stock = $product->stock - $item['quantity'];
+                    $product->save();
+                } else {
+                    DB::rollBack();
+                    return response()->json([
+                        'message' => 'Failed to place order, Out Of Stock for ' . $item['name']
+                    ], 400);
+                }
             }
 
             DB::commit();
@@ -58,7 +73,7 @@ class OrderController extends Controller
             //dd($e);
             return response()->json([
                 'message' => 'Failed to place order'
-            ], 500);
+            ], 400);
         }
 
         return response()->json([
