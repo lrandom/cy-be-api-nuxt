@@ -80,4 +80,16 @@ class OrderController extends Controller
             'message' => 'Order placed successfully'
         ]);
     }
+
+    function show($id)
+    {
+        $loggedUser = auth()->user();
+        $order = Order::where('id', $id)->where('user_id',$loggedUser->id)->with('orderItems')->first();
+        if (!$order) {
+            return response()->json([
+                'message' => 'Order not found'
+            ], 404);
+        }
+        return response()->json($order);
+    }
 }

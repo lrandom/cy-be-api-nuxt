@@ -21,6 +21,7 @@ Route::get('/v1/products/{id}/check-stock', [ProductController::class, 'checkSto
 
 Route::post('/v1/order', [OrderController::class, 'store'])->middleware('auth:api');
 Route::get('/v1/orders', [OrderController::class, 'index'])->middleware('auth:api');
+Route::get('/v1/orders/{id}', [OrderController::class, 'show'])->middleware('auth:api');
 
 Route::get('/v1/categories', [CategoryController::class, 'index'])->middleware('auth:api');
 Route::get('/v1/categories/{slug}', [CategoryController::class, 'show'])->middleware('auth:api');
